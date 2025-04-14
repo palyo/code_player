@@ -16,5 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include layout="@layout/layout_player_controls"/>
+    <include layout="@layout/layout_player_controls"
+        android:id="@+id/layout_controls"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

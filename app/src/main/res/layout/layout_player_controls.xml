@@ -38,6 +38,21 @@
         </com.google.android.material.appbar.AppBarLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/toggle_play_pause"
+        style="@style/MaterialButtonTransparent"
+        android:layout_width="@dimen/_64sdp"
+        android:layout_height="@dimen/_64sdp"
+        app:backgroundTint="@color/colorBlack24"
+        app:icon="@drawable/ic_action_play"
+        app:iconPadding="@dimen/_0sdp"
+        app:iconSize="@dimen/_48sdp"
+        app:iconTint="@color/colorWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/_0sdp"
         android:layout_height="wrap_content"
@@ -138,14 +153,14 @@
                 android:id="@+id/player_slider"
                 android:layout_width="@dimen/_0sdp"
                 android:layout_height="wrap_content"
+                android:value="50.0"
+                android:valueFrom="0.0"
+                android:valueTo="100.0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/player_duration"
                 app:layout_constraintStart_toEndOf="@+id/player_progress"
                 app:thumbColor="@color/colorAccent"
                 app:thumbHeight="@dimen/_24sdp"
-                android:value="50.0"
-                android:valueFrom="0.0"
-                android:valueTo="100.0"
                 app:trackColorActive="@color/colorAccent"
                 app:trackColorInactive="@color/colorWhite34"
                 app:trackHeight="@dimen/_3sdp" />

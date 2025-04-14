@@ -20,6 +20,8 @@ import androidx.core.view.*
 import androidx.lifecycle.*
 import androidx.media.*
 import coder.apps.space.library.base.*
+import coder.apps.space.library.extension.navigationBarHeight
+import coder.apps.space.library.extension.statusBarHeight
 import com.github.k1rakishou.fsaf.*
 import core.rocket.player.database.entities.*
 import core.rocket.player.databinding.*
@@ -398,7 +400,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         if (!isInPictureInPictureMode) {
-            viewModel.changeVideoAspect(playerPreferences?.videoAspect?:VideoAspect.Fit)
+            viewModel.changeVideoAspect(playerPreferences?.videoAspect ?: VideoAspect.Fit)
         } else {
             viewModel.hideControls()
         }
@@ -504,7 +506,10 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
                     loadVideoPlaybackState(fileName)
                 }
                 setOrientation()
-                viewModel.changeVideoAspect(playerPreferences?.videoAspect?:VideoAspect.Fit)
+                viewModel.changeVideoAspect(playerPreferences?.videoAspect ?: VideoAspect.Fit)
+                binding?.layoutControls?.apply {
+                    toolbar.title = fileName
+                }
             }
 
             MPVLib.mpvEventId.MPV_EVENT_SEEK -> viewModel.isLoading.update { true }
@@ -518,7 +523,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
             player?.let { player ->
                 val oldState = playbackStateRepository.getVideoDataByTitle(fileName)
                 Log.d(TAG, "Saving playback state")
-                val speed = (playerPreferences?.defaultSpeed?:1f).toDouble()
+                val speed = (playerPreferences?.defaultSpeed ?: 1f).toDouble()
                 playbackStateRepository.upsert(
                     PlaybackStateEntity(
                         mediaTitle = mediaTitle,
@@ -527,7 +532,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
                         } else {
                             oldState?.lastPosition ?: 0
                         },
-                        playbackSpeed = player.playbackSpeed ?: speed ,
+                        playbackSpeed = player.playbackSpeed ?: speed,
                         sid = player.sid,
                         subDelay = ((player.subDelay ?: 0.0) * 1000).toInt(),
                         subSpeed = MPVLib.getPropertyDouble("sub-speed") ?: 1.0,
@@ -547,9 +552,9 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
         val getDelay: (Int, Int?) -> Double = { preferenceDelay, stateDelay ->
             (stateDelay ?: preferenceDelay) / 1000.0
         }
-        val subDelay = getDelay(subtitlesPreferences?.defaultSubDelay?:0, state?.subDelay)
-        val secondarySubDelay = getDelay(subtitlesPreferences?.defaultSecondarySubDelay?:0, state?.secondarySubDelay)
-        val audioDelay = getDelay(audioPreferences?.defaultAudioDelay?:0, state?.audioDelay)
+        val subDelay = getDelay(subtitlesPreferences?.defaultSubDelay ?: 0, state?.subDelay)
+        val secondarySubDelay = getDelay(subtitlesPreferences?.defaultSecondarySubDelay ?: 0, state?.secondarySubDelay)
+        val audioDelay = getDelay(audioPreferences?.defaultAudioDelay ?: 0, state?.audioDelay)
         state?.let {
             player?.sid = it.sid
             player?.secondarySid = it.secondarySid
@@ -562,7 +567,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
         if (playerPreferences?.savePositionOnQuit == true) {
             state?.lastPosition?.let { if (it != 0) player?.timePos = it }
         }
-        MPVLib.setPropertyDouble("sub-speed", state?.subSpeed ?: (subtitlesPreferences?.defaultSubSpeed?:0).toDouble())
+        MPVLib.setPropertyDouble("sub-speed", state?.subSpeed ?: (subtitlesPreferences?.defaultSubSpeed ?: 0).toDouble())
     }
 
     private fun setReturnIntent() {
@@ -588,7 +593,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
             builder.setTitle(viewModel.mediaTitle.value)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val autoEnter = playerPreferences?.automaticallyEnterPip==true
+            val autoEnter = playerPreferences?.automaticallyEnterPip == true
             builder.setAutoEnterEnabled(player?.paused == false && autoEnter)
             builder.setSeamlessResizeEnabled(player?.paused == false && autoEnter)
         }
@@ -644,7 +649,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
     }
 
     private fun setOrientation() {
-        requestedOrientation = when (playerPreferences?.orientation?:PlayerOrientation.SensorLandscape) {
+        requestedOrientation = when (playerPreferences?.orientation ?: PlayerOrientation.SensorLandscape) {
             PlayerOrientation.Free -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
             PlayerOrientation.Video -> if ((player?.videoAspect ?: 0.0) > 1.0) {
                 ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -694,9 +699,9 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
     }
 
     private fun setupMediaSession() {
-        val previousAction = gesturePreferences?.mediaPreviousGesture?:SingleActionGesture.Seek
-        val playAction = gesturePreferences?.mediaPlayGesture?:SingleActionGesture.PlayPause
-        val nextAction = gesturePreferences?.mediaNextGesture?:SingleActionGesture.Seek
+        val previousAction = gesturePreferences?.mediaPreviousGesture ?: SingleActionGesture.Seek
+        val playAction = gesturePreferences?.mediaPlayGesture ?: SingleActionGesture.PlayPause
+        val nextAction = gesturePreferences?.mediaNextGesture ?: SingleActionGesture.Seek
 
         mediaSession = MediaSession(this, "PlayerActivity").apply {
             setCallback(
@@ -788,9 +793,24 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
     }
 
     override fun ActivityPlayerBinding.initListeners() {
+        layoutControls.apply {
+            togglePlayPause.setOnClickListener {
+                viewModel.pauseUnpause()
+            }
+        }
     }
 
     override fun ActivityPlayerBinding.initView() {
+        layoutControls.apply {
+            layoutTopBar.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets ->
+                v.setPadding(0, statusBarHeight, 0, 0)
+                insets
+            }
+            toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+            onBackPressedDispatcher.addCallback {
+                finish()
+            }
+        }
     }
 
     companion object {
