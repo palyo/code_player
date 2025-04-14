@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Rocket Player</string>
+
+    <string name="pref_audio_channels">Audio channels</string>
+    <string name="pref_audio_channels_auto">Auto</string>
+    <string name="pref_audio_channels_auto_safe">Auto Safe</string>
+    <string name="pref_audio_channels_mono">Mono</string>
+    <string name="pref_audio_channels_stereo">Stereo</string>
+    <string name="pref_audio_channels_stereo_reversed">Reversed Stereo</string>
+
+    <string name="pref_player_summary">Orientation, gestures and controls</string>
+    <string name="pref_player_orientation">Orientation</string>
+    <string name="pref_player_orientation_free">Free</string>
+    <string name="pref_player_orientation_video">Video</string>
+    <string name="pref_player_orientation_portrait">Portrait</string>
+    <string name="pref_player_orientation_reverse_portrait">Reverse portrait</string>
+    <string name="pref_player_orientation_sensor_portrait">Sensor portrait</string>
+    <string name="pref_player_orientation_landscape">Landscape</string>
+    <string name="pref_player_orientation_reverse_landscape">Reverse landscape</string>
+    <string name="pref_player_orientation_sensor_landscape">Sensor landscape</string>
+
+    <string name="player_aspect_fit">Fit Screen</string>
+    <string name="player_aspect_crop">Crop</string>
+    <string name="player_aspect_stretch">Stretch</string>
+
+    <string name="pref_gesture">Gestures</string>
+    <string name="pref_gesture_summary">Double tap, media controls</string>
+    <string name="pref_gesture_double_tap_title">Double tap</string>
+    <string name="pref_gesture_double_tap_none">None</string>
+    <string name="pref_gesture_double_tap_seek">Seek</string>
+    <string name="pref_gesture_double_tap_play">Play/Pause</string>
+    <string name="pref_gesture_double_tap_custom">Custom</string>
+    <string name="pref_gesture_double_tap_left_title">Double tap (left)</string>
+    <string name="pref_gesture_double_tap_center_title">Double tap (center)</string>
+    <string name="pref_gesture_double_tap_right_title">Double tap (right)</string>
+
+    <string name="player_sheets_filters_title">Filters</string>
+    <string name="player_sheets_filters_brightness">Brightness</string>
+    <string name="player_sheets_filters_contrast">Contrast</string>
+    <string name="player_sheets_filters_gamma">Gamma</string>
+    <string name="player_sheets_filters_Saturation">Saturation</string>
+    <string name="player_sheets_filters_hue">Hue</string>
+    <string name="player_sheets_filters_warning">Some filters may not work on your current video driver</string>
+
+    <string name="player_sheets_subtitles_border_style_outline_and_shadow">Outline and shadow</string>
+    <string name="player_sheets_subtitles_border_style_opaque_box">Opaque box</string>
+    <string name="player_sheets_subtitles_border_style_background_box">Background box</string>
+
+    <string name="toast_sleep_timer_ended">Sleep timer ended</string>
+
+    <string name="player_sheets_add_ext_sub">Add external subtitles</string>
+    <string name="player_sheets_add_ext_audio">Add external audio tracks</string>
+    <string name="player_sheets_tracks_off">Off</string>
+
+</resources>

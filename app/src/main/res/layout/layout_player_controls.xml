@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_top_bar"
+        android:layout_width="@dimen/_0sdp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_gradient_background_flipped"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="@dimen/_0sdp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorTransparent"
+            android:theme="@style/Theme.Space.AppBarOverlay"
+            app:elevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@null"
+                android:theme="@style/Theme.CodePlayer"
+                app:navigationIcon="@drawable/ic_navigation_back"
+                app:navigationIconTint="@color/colorWhite"
+                app:popupTheme="@style/Theme.Space.PopupMenu"
+                app:titleTextAppearance="@style/Theme.CodePlayer.Toolbar.Title"
+                app:titleTextColor="@color/colorWhite" />
+        </com.google.android.material.appbar.AppBarLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/_0sdp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_gradient_background"
+        android:padding="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_lock"
+            style="@style/MaterialButtonTransparent"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
+            app:icon="@drawable/ic_lock_open"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/_0sdp"
+            app:iconSize="@dimen/_20sdp"
+            app:iconTint="@color/colorWhite"
+            app:layout_constraintBottom_toTopOf="@+id/layout_timer"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_orientation"
+            style="@style/MaterialButtonTransparent"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            app:icon="@drawable/ic_screen_rotation"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/_0sdp"
+            app:iconSize="@dimen/_20sdp"
+            app:iconTint="@color/colorWhite"
+            app:layout_constraintStart_toEndOf="@+id/action_lock"
+            app:layout_constraintTop_toTopOf="@+id/action_lock" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_playback_speed"
+            style="@style/MaterialButtonTransparent"
+            android:layout_width="@dimen/_48sdp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:paddingHorizontal="@dimen/_0sdp"
+            android:text="1.0X"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintStart_toEndOf="@+id/action_orientation"
+            app:layout_constraintTop_toTopOf="@+id/action_lock" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_pip"
+            style="@style/MaterialButtonTransparent"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            app:icon="@drawable/ic_pip"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/_0sdp"
+            app:iconSize="@dimen/_20sdp"
+            app:iconTint="@color/colorWhite"
+            app:layout_constraintEnd_toStartOf="@+id/action_scale"
+            app:layout_constraintTop_toTopOf="@+id/action_lock" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/action_scale"
+            style="@style/MaterialButtonTransparent"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
+            app:icon="@drawable/ic_aspect_ratio"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/_0sdp"
+            app:iconSize="@dimen/_20sdp"
+            app:iconTint="@color/colorWhite"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/action_lock" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_timer"
+            android:layout_width="@dimen/_0sdp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/player_progress"
+                style="@style/TextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="@+id/player_slider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/player_slider" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/player_slider"
+                android:layout_width="@dimen/_0sdp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/player_duration"
+                app:layout_constraintStart_toEndOf="@+id/player_progress"
+                app:thumbColor="@color/colorAccent"
+                app:thumbHeight="@dimen/_24sdp"
+                android:value="50.0"
+                android:valueFrom="0.0"
+                android:valueTo="100.0"
+                app:trackColorActive="@color/colorAccent"
+                app:trackColorInactive="@color/colorWhite34"
+                app:trackHeight="@dimen/_3sdp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/player_duration"
+                style="@style/TextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="@+id/player_slider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/player_slider" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
