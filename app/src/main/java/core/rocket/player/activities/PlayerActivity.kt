@@ -20,12 +20,13 @@ import androidx.core.view.*
 import androidx.lifecycle.*
 import androidx.media.*
 import coder.apps.space.library.base.*
-import coder.apps.space.library.extension.navigationBarHeight
-import coder.apps.space.library.extension.statusBarHeight
+import coder.apps.space.library.extension.*
 import com.github.k1rakishou.fsaf.*
+import core.rocket.player.R
 import core.rocket.player.database.entities.*
 import core.rocket.player.databinding.*
 import core.rocket.player.domain.playbackstate.repository.*
+import core.rocket.player.widgets.controls.GestureHandler
 import core.rocket.player.widgets.controls.createPipActions
 import core.rocket.player.widgets.enums.*
 import core.rocket.player.widgets.extension.PIP_FF
@@ -43,7 +44,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.android.ext.android.*
 import java.io.*
-import kotlin.text.get
+import kotlin.text.compareTo
 
 const val TAG = "mpvKt"
 
@@ -66,6 +67,10 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
     private val playbackStateRepository: PlaybackStateRepository by inject()
 
     private var fileName = ""
+    private var controlsShown = true
+    private var isSeekingForwards = false
+    private var isDoubleTapSeeking = false
+    private var areControlsLocked = false
 
     private var audioFocusRequest: AudioFocusRequestCompat? = null
     private var restoreAudioFocus: () -> Unit = {}
@@ -114,6 +119,7 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
         audioFocusRequest?.let {
             AudioManagerCompat.abandonAudioFocusRequest(audioManager, it)
         }
+        handler.removeCallbacks(hideControlsRunnable)
         audioFocusRequest = null
         mediaSession?.release()
         if (noisyReceiver.initialized) {
@@ -792,11 +798,111 @@ class PlayerActivity : BaseActivity<ActivityPlayerBinding>(ActivityPlayerBinding
         noisyReceiver.initialized = true
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val hideControlsRunnable = kotlinx.coroutines.Runnable {
+        viewModel.hideControls()
+    }
+
+    fun maybeStartHideControlsTimer(
+        controlsShown: Boolean,
+        paused: Boolean,
+        isSeeking: Boolean,
+        playerTimeToDisappear: Long
+    ) {
+        handler.removeCallbacks(hideControlsRunnable)
+        if (controlsShown && !paused && !isSeeking) {
+            handler.postDelayed(hideControlsRunnable, playerTimeToDisappear)
+        }
+    }
+
     override fun ActivityPlayerBinding.initListeners() {
         layoutControls.apply {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch {
+                        viewModel.controlsShown.collect { isShown ->
+                            controlsShown = isShown
+                            layoutControls.root.beVisibleIf(controlsShown)
+                            if (isShown){
+                                maybeStartHideControlsTimer(
+                                    controlsShown = isShown,
+                                    paused = viewModel.paused.value,
+                                    isSeeking = isSeekingForwards,
+                                    playerTimeToDisappear = 3000L
+                                )
+                            }
+                        }
+                    }
+                    launch {
+                        viewModel.isSeekingForwards.collect { isShown ->
+                            isSeekingForwards = isShown
+                        }
+                    }
+                    launch {
+                        viewModel.areControlsLocked.collect { isShown ->
+                            areControlsLocked = isShown
+                        }
+                    }
+                    launch {
+                        viewModel.paused.collect { isPaused ->
+                            togglePlayPause.icon = if (isPaused) getDrawableRes(R.drawable.ic_action_play) else getDrawableRes(R.drawable.ic_action_pause)
+                        }
+                    }
+                    launch {
+                        viewModel.pos.collect { position ->
+                            playerProgress.text = Utils.prettyTime(position.toInt(), playerPreferences?.invertDuration == true)
+                            playerSlider.value = position
+                        }
+                    }
+                    launch {
+                        viewModel.duration.collect { duration ->
+                            if (duration == 0F) return@collect
+                            playerSlider.valueTo = duration
+                            playerDuration.text = Utils.prettyTime(duration.toInt(), playerPreferences?.invertDuration == true)
+                        }
+                    }
+                }
+            }
+
             togglePlayPause.setOnClickListener {
                 viewModel.pauseUnpause()
             }
+            playerSlider.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser) {
+                    viewModel.updatePlayBackPos(value)
+                    viewModel.seekTo(value.toInt(), playerPreferences?.preciseSeeking == true)
+                }
+            }
+        }
+
+        val gestureHandler = GestureHandler(
+            onSingleTap = { if (controlsShown) viewModel.hideControls() else viewModel.showControls() },
+            onDoubleTapAction = {
+                if (areControlsLocked) return@GestureHandler
+                val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+                val x = it.x
+                if (x > screenWidth * 3 / 5) {
+                    if (!isSeekingForwards) viewModel.updateSeekAmount(0)
+                    viewModel.handleRightDoubleTap()
+                } else if (x < screenWidth * 2 / 5) {
+                    if (isSeekingForwards) viewModel.updateSeekAmount(0)
+                    viewModel.handleLeftDoubleTap()
+                    isDoubleTapSeeking = true
+                } else {
+                    viewModel.handleCenterDoubleTap()
+                }
+            },
+            onSwipeVolumeUp = { /* viewModel.increaseVolume() */ },
+            onSwipeVolumeDown = { /* viewModel.decreaseVolume() */ },
+            onSwipeBrightnessUp = { /* viewModel.increaseBrightness() */ },
+            onSwipeBrightnessDown = { /* viewModel.decreaseBrightness() */ },
+        )
+
+        val gestureDetector = GestureDetector(this@PlayerActivity, gestureHandler)
+
+        root.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
         }
     }
 
